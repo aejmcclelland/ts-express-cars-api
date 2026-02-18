@@ -2,10 +2,10 @@
 
 A small Express + TypeScript API used to practise:
 
-- router structure (`/api` mount)
-- controller-style handlers
-- request validation (incl. enum validation)
-- predictable response shapes for easy testing
+- Router structure (`/api` mount)
+- Controller-style handlers
+- Runtime request validation (including enum validation)
+- Predictable response shapes for easier testing
 
 ## Tech
 
@@ -20,21 +20,25 @@ pnpm install
 pnpm dev
 ```
 
-Server runs at: • http://localhost:3000
+Server runs at:
 
-Endpoints
+http://localhost:3000
 
-GET /api/cars
+## Endpoints
+
+### GET `/api/cars`
 
 Returns all cars.
 
 Response shape:
 
-```bash
+```json
 { "count": 0, "data": [] }
 ```
 
-POST /api/cars
+---
+
+### POST `/api/cars`
 
 Creates a car.
 
@@ -46,18 +50,17 @@ curl -s -X POST http://localhost:3000/api/cars \
   -d '{"make":"Audi","model":"A4","year":2018,"fuelType":"petrol"}'
 ```
 
-Car Shape
+## Car Shape
 
 ```json
 {
-"make": "string",
-"model": "string",
-"year": 2018,
-"fuelType": "petrol | diesel | electric | hybrid"
+  "make": "string",
+  "model": "string",
+  "year": 2018,
+  "fuelType": "petrol | diesel | electric | hybrid"
 }
 ```
 
-Notes:
+## Notes
 
-- Uses an in-memory array (no database) to keep focus on routing + validation
-  patterns.
+- Uses an in-memory array (no database) to keep focus on routing and validation patterns.
