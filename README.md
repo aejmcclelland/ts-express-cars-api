@@ -1,4 +1,4 @@
-# ts-express-cars-api
+# ts-express-places-api
 
 A small Express + TypeScript API used to practise:
 
@@ -26,9 +26,9 @@ http://localhost:3000
 
 ## Endpoints
 
-### GET `/api/cars`
+### GET `/api/places`
 
-Returns all cars.
+Returns all places.
 
 Response shape:
 
@@ -38,29 +38,30 @@ Response shape:
 
 ---
 
-### POST `/api/cars`
+### POST `/api/places`
 
-Creates a car.
+Creates a place.
 
 Example:
 
 ```bash
-curl -s -X POST http://localhost:3000/api/cars \
+curl -s -X POST http://localhost:3000/api/places \
   -H "Content-Type: application/json" \
-  -d '{"make":"Audi","model":"A4","year":2018,"fuelType":"petrol"}'
+  -d '{"name":"London Bridge","placeType":"culture","id":"00001"}'
 ```
 
-## Car Shape
+## Place Shape
 
 ```json
 {
-  "make": "string",
-  "model": "string",
-  "year": 2018,
-  "fuelType": "petrol | diesel | electric | hybrid"
+	"id": "string",
+	"name": "string",
+	"placeType": "culture | entertainment | food and drink | business | health | shopping | sports",
+	"external_id": "string"
 }
 ```
 
 ## Notes
 
-- Uses an in-memory array (no database) to keep focus on routing and validation patterns.
+- Uses an in-memory array (no database) to keep focus on routing and validation
+  patterns.
