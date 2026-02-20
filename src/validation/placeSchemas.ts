@@ -11,13 +11,12 @@ export const CreatePlaceBodySchema = z.object({
 	placeType: z.enum(PLACE_TYPES),
 });
 
-// (Optional for later)
 export const PlaceIdParamsSchema = z.object({
-	id: z.string().min(1),
+	id: z.string().trim().min(1),
 });
 
-export const PlaceQuerySchema = z.object({
-    placeType: z.enum(PLACE_TYPES).optional(),
-    provider: ProviderSchema.optional(),
-    name: z.string().toLowerCase().optional(),
+export const PlacesQuerySchema = z.object({
+	placeType: z.enum(PLACE_TYPES).optional(),
+	provider: ProviderSchema.optional(),
+	name: z.string().toLowerCase().optional(),
 });

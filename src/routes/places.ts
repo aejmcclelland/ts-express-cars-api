@@ -3,16 +3,15 @@ import type { RequestHandler, Router as ExpressRouter } from 'express';
 import type { Place } from '../types/place';
 import {
 	CreatePlaceBodySchema,
-	PlaceQuerySchema,
+	PlacesQuerySchema,
+	PlaceIdParamsSchema,
 } from '../validation/placeSchemas';
-
 const router: ExpressRouter = Router();
 
 const places: Place[] = [];
-
 // GET /places
 const getPlaces: RequestHandler = (req, res) => {
-	const parsed = PlaceQuerySchema.safeParse(req.query);
+	const parsed = PlacesQuerySchema.safeParse(req.query);
 
 	if (!parsed.success) {
 		return res.status(400).json({
@@ -32,6 +31,29 @@ const getPlaces: RequestHandler = (req, res) => {
 	);
 
 	return res.status(200).json({ count: filtered.length, data: filtered });
+};
+
+// GET /places/:id
+const getPlaceById: RequestHandler = (req, res) => {
+	const parsed = PlaceIdParamsSchema.safeParse(req.params);
+
+	if (!parsed.success) {
+		return res.status(400).json({
+			error: {
+				message: 'Invalid place ID',
+				issues: parsed.error.issues,
+			},
+		});
+	}
+
+	const { id } = parsed.data;
+	const place = places.find((p) => p.id === id);
+
+	if (!place) {
+		return res.status(404).json({ error: { message: 'Place not found' } });
+	}
+
+	return res.status(200).json({ data: place });
 };
 
 // POST /places
@@ -64,5 +86,6 @@ const createPlace: RequestHandler = (req, res) => {
 // Routes
 router.get('/places', getPlaces);
 router.post('/places', createPlace);
+router.get('/places/:id', getPlaceById);
 
 export default router;
