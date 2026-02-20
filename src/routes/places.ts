@@ -83,9 +83,34 @@ const createPlace: RequestHandler = (req, res) => {
 	places.push(newPlace);
 	return res.status(201).json({ data: newPlace });
 };
+
+// DELETE /places/:id
+const deletePlaceById: RequestHandler = (req, res) => {
+	const parsed = PlaceIdParamsSchema.safeParse(req.params);
+
+	if (!parsed.success) {
+		return res.status(400).json({
+			error: {
+				message: 'Invalid place ID',
+				issues: parsed.error.issues,
+			},
+		});
+	}
+
+	const { id } = parsed.data;
+	const placeIndex = places.findIndex((p) => p.id === id);
+
+	if (placeIndex === -1) {
+		return res.status(404).json({ error: { message: 'Place not found' } });
+	}
+
+	places.splice(placeIndex, 1);
+	return res.status(204).send();
+};
+
 // Routes
 router.get('/places', getPlaces);
 router.post('/places', createPlace);
 router.get('/places/:id', getPlaceById);
-
+router.delete('/places/:id', deletePlaceById);
 export default router;
