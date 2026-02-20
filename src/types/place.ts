@@ -1,14 +1,18 @@
-export enum PlaceType {
-	entertainmnet = 'entertainment',
-	culture = 'culture',
-	food_and_drink = 'food-and-drink',
-	business = 'business',
-	health = 'health',
-	shopping = 'shopping',
-	sports = 'sports',
-}
+export const PLACE_TYPES = [
+	'entertainment',
+	'culture',
+	'food-and-drink',
+	'business',
+	'health',
+	'shopping',
+	'sports',
+] as const;
 
-export type Provider = 'tfl' | 'translink';
+export type PlaceType = (typeof PLACE_TYPES)[number];
+
+export const PROVIDERS = ['tfl', 'translink'] as const;
+
+export type Provider = (typeof PROVIDERS)[number];
 
 export interface Place {
 	id: string;

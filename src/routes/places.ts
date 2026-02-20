@@ -1,17 +1,38 @@
 import { Router } from 'express';
 import type { RequestHandler, Router as ExpressRouter } from 'express';
 import type { Place } from '../types/place';
-import { CreatePlaceBodySchema } from '../validation/placeSchemas';
+import {
+	CreatePlaceBodySchema,
+	PlaceQuerySchema,
+} from '../validation/placeSchemas';
 
 const router: ExpressRouter = Router();
 
 const places: Place[] = [];
 
 // GET /places
-const getPlaces: RequestHandler = (_req, res) => {
-	return res.status(200).json({ count: places.length, data: places });
-};
+const getPlaces: RequestHandler = (req, res) => {
+	const parsed = PlaceQuerySchema.safeParse(req.query);
 
+	if (!parsed.success) {
+		return res.status(400).json({
+			error: {
+				message: 'Invalid query parameters',
+				issues: parsed.error.issues,
+			},
+		});
+	}
+	const { provider, placeType, name } = parsed.data;
+
+	const filtered = places.filter(
+		(p) =>
+			(provider ? p.provider === provider : true) &&
+			(placeType ? p.placeType === placeType : true) &&
+			(name ? p.name.toLowerCase().includes(name) : true),
+	);
+
+	return res.status(200).json({ count: filtered.length, data: filtered });
+};
 
 // POST /places
 const createPlace: RequestHandler = (req, res) => {
@@ -33,7 +54,7 @@ const createPlace: RequestHandler = (req, res) => {
 		name: data.name,
 		provider: data.provider,
 		external_id: data.external_id,
-		placeType: data.placeType as any, // remove once PlaceType matches schema values exactly
+		placeType: data.placeType,
 		createdAt: new Date(),
 	};
 

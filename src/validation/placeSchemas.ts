@@ -1,26 +1,23 @@
 import { z } from 'zod';
+import { PLACE_TYPES, PROVIDERS } from '../types/place';
 
-export const ProviderSchema = z.enum(['tfl', 'translink']);
-
-export const PlaceTypeSchema = z.enum([
-	'entertainment',
-	'culture',
-	'food-and-drink',
-	'business',
-	'health',
-	'shopping',
-	'sports',
-]);
+export const ProviderSchema = z.enum(PROVIDERS);
 
 export const CreatePlaceBodySchema = z.object({
 	id: z.string().min(1),
 	name: z.string().min(1),
 	external_id: z.string().min(1),
 	provider: ProviderSchema.default('tfl'),
-	placeType: PlaceTypeSchema,
+	placeType: z.enum(PLACE_TYPES),
 });
 
 // (Optional for later)
 export const PlaceIdParamsSchema = z.object({
 	id: z.string().min(1),
+});
+
+export const PlaceQuerySchema = z.object({
+    placeType: z.enum(PLACE_TYPES).optional(),
+    provider: ProviderSchema.optional(),
+    name: z.string().toLowerCase().optional(),
 });
