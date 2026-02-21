@@ -5,6 +5,7 @@ import {
 	CreatePlaceBodySchema,
 	PlacesQuerySchema,
 	PlaceIdParamsSchema,
+	UpdatePlaceBodySchema,
 } from '../validation/placeSchemas';
 const router: ExpressRouter = Router();
 
@@ -91,6 +92,14 @@ const createPlace: RequestHandler = (req, res) => {
 		createdAt: new Date(),
 	};
 
+	// Prevent duplicates (in-memory data): id must be unique.
+	const idExists = places.some((p) => p.id === newPlace.id);
+	if (idExists) {
+		return res.status(409).json({
+			error: { message: `Place with id '${newPlace.id}' already exists` },
+		});
+	}
+
 	places.push(newPlace);
 	return res.status(201).json({ data: newPlace });
 };
@@ -119,10 +128,56 @@ const deletePlaceById: RequestHandler = (req, res) => {
 	return res.status(204).send();
 };
 
+// PUT /places/:id
+const updatePlaceById: RequestHandler = (req, res) => {
+	const parsedParams = PlaceIdParamsSchema.safeParse(req.params);
+
+	if (!parsedParams.success) {
+		return res.status(400).json({
+			error: {
+				message: 'Invalid place ID',
+				issues: parsedParams.error.issues,
+			},
+		});
+	}
+
+	const { id } = parsedParams.data;
+	const placeIndex = places.findIndex((p) => p.id === id);
+
+	if (placeIndex === -1) {
+		return res.status(404).json({ error: { message: 'Place not found' } });
+	}
+
+	const parsedBody = UpdatePlaceBodySchema.safeParse(req.body);
+
+	if (!parsedBody.success) {
+		return res.status(400).json({
+			error: {
+				message: 'Invalid update payload',
+				issues: parsedBody.error.issues,
+			},
+		});
+	}
+
+	const existing = places[placeIndex];
+	const data = parsedBody.data;
+	const updatedPlace: Place = {
+		...existing,
+		name: data.name,
+		provider: data.provider,
+		external_id: data.external_id,
+		placeType: data.placeType,
+	};
+	places[placeIndex] = updatedPlace;
+
+	return res.status(200).json({ data: updatedPlace });
+};
+
 // Routes
 router.get('/places', getPlaces);
-router.post('/places', createPlace);
 router.get('/places/:id', getPlaceById);
+router.post('/places', createPlace);
+router.put('/places/:id', updatePlaceById);
 router.delete('/places/:id', deletePlaceById);
 
 export default router;

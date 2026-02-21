@@ -22,3 +22,5 @@ export const PlacesQuerySchema = z.object({
 	page: z.coerce.number().int().positive().default(1),
 	limit: z.coerce.number().int().positive().max(100).default(10),
 });
+
+export const UpdatePlaceBodySchema = CreatePlaceBodySchema.omit({ id: true });
