@@ -9,6 +9,7 @@ import {
 const router: ExpressRouter = Router();
 
 const places: Place[] = [];
+
 // GET /places
 const getPlaces: RequestHandler = (req, res) => {
 	const parsed = PlacesQuerySchema.safeParse(req.query);
@@ -21,7 +22,7 @@ const getPlaces: RequestHandler = (req, res) => {
 			},
 		});
 	}
-	const { provider, placeType, name } = parsed.data;
+	const { provider, placeType, name, page, limit } = parsed.data;
 
 	const filtered = places.filter(
 		(p) =>
@@ -30,7 +31,17 @@ const getPlaces: RequestHandler = (req, res) => {
 			(name ? p.name.toLowerCase().includes(name) : true),
 	);
 
-	return res.status(200).json({ count: filtered.length, data: filtered });
+	// Pagination (applied after filtering)
+	const count = filtered.length;
+	const totalPages = Math.max(1, Math.ceil(count / limit));
+	const startIndex = (page - 1) * limit;
+	const data = filtered.slice(startIndex, startIndex + limit);
+
+	return res.status(200).json({
+		count,
+		data,
+		meta: { page, limit, totalPages },
+	});
 };
 
 // GET /places/:id
@@ -113,4 +124,5 @@ router.get('/places', getPlaces);
 router.post('/places', createPlace);
 router.get('/places/:id', getPlaceById);
 router.delete('/places/:id', deletePlaceById);
+
 export default router;

@@ -18,5 +18,7 @@ export const PlaceIdParamsSchema = z.object({
 export const PlacesQuerySchema = z.object({
 	placeType: z.enum(PLACE_TYPES).optional(),
 	provider: ProviderSchema.optional(),
-	name: z.string().toLowerCase().optional(),
+	name: z.string().trim().toLowerCase().optional(),
+	page: z.coerce.number().int().positive().default(1),
+	limit: z.coerce.number().int().positive().max(100).default(10),
 });
