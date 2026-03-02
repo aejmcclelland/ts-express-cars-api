@@ -1,0 +1,4 @@
+interface:
+  display_name: "Express API Phase 1"
+  short_description: "Add or extend Express TS endpoints"
+  default_prompt: "Use $express-api-phase1 to add or extend an Express endpoint in this TypeScript project with minimal diffs and Zod validation."
